@@ -1,0 +1,23 @@
+{
+  "name": "active-record",
+  "version": "0.0.0",
+  "description": "Active record models",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/efortes/node-active-record.git"
+  },
+  "author": "Elvin Fortes <info@fortesglobalweb.nl> (http://www.fortesglobalweb.nl/)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/efortes/node-active-record/issues"
+  },
+  "dependencies": {
+    "traceur": "0.0.86",
+    "traceur-source-maps": "~1.0.6",
+    "extend": "~2.0.0"
+  }
+}
