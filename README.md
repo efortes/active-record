@@ -1,7 +1,59 @@
-# Active record for LDAP and MYSQL
+## LDAP model Example
+```
+class UmbrellaOuParent extends ActiveRecord.LdapModel {	 
+		
+	constructor(data) {
+	  super(data);
+	  
+	  var fields = [LdapModel.createField({
+	  	name: "dn",
+	  }),LdapModel.createField({
+	  	name: "ou",
+	  })];
+	  
+	  this.init({
+	  	fields: fields,
+	  	Model: UmbrellaOuParent,
+	  	data: data
+	  });    
+	}
+	
+  generateUniqueAttribute(options) {
+  	return options.callback(null, "Umbrellas");
+  }
+};
 
-## SQL model Example
-`
+UmbrellaOuParent.objectClasses = ["organizationalUnit", "top"];
+UmbrellaOuParent.mandatoryAttributes = [];
+UmbrellaOuParent.uniqueAttribute = "ou";
+UmbrellaOuParent.connection = ldapConn;
+UmbrellaOuParent.baseDn = "ou=Umbrellas,dc=CIDS";
+```
+### LDAP model save example
+```
+var tenant = new TenantUser({
+	sn: "test" + Math.random(),
+	givenName: "test" + Math.random(),
+	name: "test" + Math.random(),
+	mail: "tester@asd.com" + Math.random(),
+});
+
+tenant.set("cIDSPrimaryLoginID", "test" + Math.random());		
+
+tenant.save({
+	parentDn: "ou=IDM,ou=Users,ou=33333333,ou=Tenants,dc=CIDS",
+	callback: function(err, newModel) {
+		if (err) {
+			console.log("- ERROR ------");
+			return console.log(err.toString());
+		}
+		console.log(newModel);
+	}
+});
+```
+
+### SQL model Example
+```
 class Service extends ActiveRecord.SqlModel {
 	
   constructor(data) {
@@ -39,10 +91,12 @@ Service.combine = [{
 	combineLink: 'cn',
 	combineField: 'serviceLdap'
 }];
-`
+```
+### SQL model - find with associations
+TODO
 
-### SQL model - Combine models
-`
+### SQL model - Combine models with find
+```
 ServiceModel.find({
 	where: {
 		id: 2
@@ -61,4 +115,49 @@ ServiceModel.find({
 		console.log(serviceLdap);
 	}
 });
-`
+```
+### SQL model save example
+```
+TODO
+```
+### SQL count
+```
+Order.count({
+	debug: true,
+	include: ['portal'],
+	callback: function(err, total) {
+		if (err) {
+			return console.log(err);					
+		}
+		console.log("Total count: " + total);
+	}
+});
+```
+### SQL model - Combine models with findAll
+```
+ServiceModel.findAll({
+	combine: [{
+		field: 'serviceCn',
+		single: true,
+		mandatory: false,
+		parentDn: gripCidsObjects.TenantGroupServiceInstance.getBaseDn({
+			tenantOu: 33333333
+		})
+	}],
+	callback: function(err, models) {
+		if (err) return next(err);
+		var result = [];
+		models.forEach(function(model) {					
+			var serviceLdap = model.get("serviceLdap");
+			if (serviceLdap) {
+				result.push(serviceLdap.get("dn"));
+			} else {
+				result.push(model.get("name_en") + " not found");						
+			}
+		});
+		
+		res.send(result.join(", "));
+	}
+});
+```
+This implementation is NOT final and subject to change.
