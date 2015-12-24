@@ -1,56 +1,5 @@
-## LDAP model Example
-```
-class UmbrellaOuParent extends ActiveRecord.LdapModel {	 
-		
-	constructor(data) {
-	  super(data);
-	  
-	  var fields = [LdapModel.createField({
-	  	name: "dn",
-	  }),LdapModel.createField({
-	  	name: "ou",
-	  })];
-	  
-	  this.init({
-	  	fields: fields,
-	  	Model: UmbrellaOuParent,
-	  	data: data
-	  });    
-	}
-	
-  generateUniqueAttribute(options) {
-  	return options.callback(null, "Umbrellas");
-  }
-};
-
-UmbrellaOuParent.objectClasses = ["organizationalUnit", "top"];
-UmbrellaOuParent.mandatoryAttributes = [];
-UmbrellaOuParent.uniqueAttribute = "ou";
-UmbrellaOuParent.connection = ldapConn;
-UmbrellaOuParent.baseDn = "ou=Umbrellas,dc=CIDS";
-```
-### LDAP model save example
-```
-var tenant = new TenantUser({
-	sn: "test" + Math.random(),
-	givenName: "test" + Math.random(),
-	name: "test" + Math.random(),
-	mail: "tester@asd.com" + Math.random(),
-});
-
-tenant.set("cIDSPrimaryLoginID", "test" + Math.random());		
-
-tenant.save({
-	parentDn: "ou=IDM,ou=Users,ou=33333333,ou=Tenants,dc=CIDS",
-	callback: function(err, newModel) {
-		if (err) {
-			console.log("- ERROR ------");
-			return console.log(err.toString());
-		}
-		console.log(newModel);
-	}
-});
-```
+## Not ready
+This package is for testing only. Not ready jet.
 
 ### SQL model Example
 ```
@@ -110,9 +59,9 @@ ServiceModel.find({
 	}],
 	callback: function(err, model) {
 		if (err) return next(err);
-		var serviceLdap = model.get("serviceLdap");
+		var serviceCn = model.get("serviceCn");
 		
-		console.log(serviceLdap);
+		console.log(serviceCn);
 	}
 });
 ```
@@ -160,4 +109,60 @@ ServiceModel.findAll({
 	}
 });
 ```
+
+## LDAP model Example
+```
+class UmbrellaOuParent extends ActiveRecord.LdapModel {	 
+		
+	constructor(data) {
+	  super(data);
+	  
+	  var fields = [LdapModel.createField({
+	  	name: "dn",
+	  }),LdapModel.createField({
+	  	name: "ou",
+	  })];
+	  
+	  this.init({
+	  	fields: fields,
+	  	Model: UmbrellaOuParent,
+	  	data: data
+	  });    
+	}
+	
+  generateUniqueAttribute(options) {
+  	return options.callback(null, "Umbrellas");
+  }
+};
+
+UmbrellaOuParent.objectClasses = ["organizationalUnit", "top"];
+UmbrellaOuParent.mandatoryAttributes = [];
+UmbrellaOuParent.uniqueAttribute = "ou";
+UmbrellaOuParent.connection = ldapConn;
+UmbrellaOuParent.baseDn = "ou=Umbrellas,dc=CIDS";
+```
+### LDAP model save example
+```
+var tenant = new TenantUser({
+	sn: "test" + Math.random(),
+	givenName: "test" + Math.random(),
+	name: "test" + Math.random(),
+	mail: "tester@asd.com" + Math.random(),
+});
+
+tenant.set("cIDSPrimaryLoginID", "test" + Math.random());		
+
+tenant.save({
+	parentDn: "ou=IDM,ou=Users,ou=33333333,ou=Tenants,dc=CIDS",
+	callback: function(err, newModel) {
+		if (err) {
+			console.log("- ERROR ------");
+			return console.log(err.toString());
+		}
+		console.log(newModel);
+	}
+});
+```
+
+
 This implementation is NOT final and subject to change.
