@@ -1,159 +1,134 @@
-## Not ready
-This package is for testing only. Not ready jet.
+## Intro
+This module is not ready yet. Feel free to create pull requests at https://github.com/efortes/active-record .
+This module allows you to accessing and manipulating data in a Mysql or LDAP database withough writing queries.
 
-### SQL model Example
+### Set up
 ```
-class Service extends ActiveRecord.SqlModel {
-	
+const activeRecord = require('active-record');
+const SqlModel = activeRecord.SqlModel;
+const LdapModel = activeRecord.LdapModel;
+// Set config
+activeRecord.setConfig({
+    logQuery: true
+})
+
+// Mysql connection See https://www.npmjs.com/package/mysql#pool-options for the mysql pool options
+const mysqlConn = activeRecord.createMysqlConn({
+    host: null,
+    user: null,
+    password: null,
+    database: null,
+    port: null
+});
+
+//Ldap connection. See http://ldapjs.org/client.html
+const ldapConn = activeRecord.createLdapConn({
+    url: 'ldap://url'
+})
+
+```
+### SQL model Example
+const activeRecord = require('active-record');
+const SqlModel = activeRecord.SqlModel;
+const LdapModel = activeRecord.LdapModel;
+
+```
+class Service extends activeRecord.SqlModel {
+
   constructor(data) {
     super(data);
-    
+
     var fields = [SqlModel.createField({
     	name: "id"
     }), SqlModel.createField({
     	name: "serviceCn"
-    })];   
-    
+    })];
+
      var associations = [
        { type: 'hasOne',  Model:Background,      name: 'background' },
        { type: 'hasOne',  Model:Language,        name: 'language' },
        { type: 'hasMany', Model:ServiceComment,  name: 'serviceComments' },
-     ];     
-        
+     ];
+
     this.init({
     	fields: fields,
     	Model: Service,
     	data: data,
 			associations: associations
-    });    
-  }  
+    });
+  }
 };
 
 Service.primaryKey = "id";
 Service.table = "service";
 Service.adapter = "mysql";
 Service.connection = mysqlConn;
-Service.combine = [{
-	type: 'ldap',
-	field: 'serviceCn',
-	CombineModel: gripCidsObjects.TenantGroupServiceInstanceItem,
-	combineLink: 'cn',
-	combineField: 'serviceLdap'
-}];
 ```
 ### SQL model - find with associations
 TODO
 
-### SQL model - Combine models with find
-```
-ServiceModel.find({
-	where: {
-		id: 2
-	},
-	combine: [{
-		field: 'serviceCn',
-		single: true,
-		parentDn: gripCidsObjects.TenantGroupServiceInstance.getBaseDn({
-			tenantOu: 33333333
-		}),
-	}],
-	callback: function(err, model) {
-		if (err) return next(err);
-		var serviceCn = model.get("serviceCn");
-		
-		console.log(serviceCn);
-	}
-});
-```
 ### SQL model save example
 ```
 TODO
 ```
 ### SQL count
 ```
-Order.count({
-	debug: true,
-	include: ['portal'],
+ServiceModel.count({
+	include: ['language'],
 	callback: function(err, total) {
 		if (err) {
-			return console.log(err);					
+			return console.log(err);
 		}
 		console.log("Total count: " + total);
 	}
 });
 ```
-### SQL model - Combine models with findAll
-```
-ServiceModel.findAll({
-	combine: [{
-		field: 'serviceCn',
-		single: true,
-		mandatory: false,
-		parentDn: gripCidsObjects.TenantGroupServiceInstance.getBaseDn({
-			tenantOu: 33333333
-		})
-	}],
-	callback: function(err, models) {
-		if (err) return next(err);
-		var result = [];
-		models.forEach(function(model) {					
-			var serviceLdap = model.get("serviceLdap");
-			if (serviceLdap) {
-				result.push(serviceLdap.get("dn"));
-			} else {
-				result.push(model.get("name_en") + " not found");						
-			}
-		});
-		
-		res.send(result.join(", "));
-	}
-});
-```
+
 
 ## LDAP model Example
 ```
-class UmbrellaOuParent extends ActiveRecord.LdapModel {	 
-		
+class LdapUser extends LdapModel {
+
 	constructor(data) {
 	  super(data);
-	  
+
 	  var fields = [LdapModel.createField({
 	  	name: "dn",
 	  }),LdapModel.createField({
-	  	name: "ou",
+	  	name: "cn",
+	  }),LdapModel.createField({
+	  	name: "name",
 	  })];
-	  
+
 	  this.init({
 	  	fields: fields,
-	  	Model: UmbrellaOuParent,
+	  	Model: LdapUser,
 	  	data: data
-	  });    
+	  });
 	}
-	
+
   generateUniqueAttribute(options) {
-  	return options.callback(null, "Umbrellas");
+  	return options.callback(null, "1000000");
   }
 };
 
-UmbrellaOuParent.objectClasses = ["organizationalUnit", "top"];
-UmbrellaOuParent.mandatoryAttributes = [];
-UmbrellaOuParent.uniqueAttribute = "ou";
-UmbrellaOuParent.connection = ldapConn;
-UmbrellaOuParent.baseDn = "ou=Umbrellas,dc=CIDS";
+LdapUser.objectClasses = ["user"];
+LdapUser.mandatoryAttributes = [];
+LdapUser.uniqueAttribute = "ou";
+LdapUser.connection = ldapConn;
+LdapUser.baseDn = "ou=User,dc=CIDS";
 ```
 ### LDAP model save example
 ```
-var tenant = new TenantUser({
-	sn: "test" + Math.random(),
-	givenName: "test" + Math.random(),
+var ldapUser = new LdapUser({
+	cn: "test" + Math.random(),
 	name: "test" + Math.random(),
-	mail: "tester@asd.com" + Math.random(),
 });
 
-tenant.set("cIDSPrimaryLoginID", "test" + Math.random());		
+ldapUser.set("name", "test2" + Math.random());
 
-tenant.save({
-	parentDn: "ou=IDM,ou=Users,ou=33333333,ou=Tenants,dc=CIDS",
+ldapUser.save({
+	parentDn: LdapUser.getBaseDn(),
 	callback: function(err, newModel) {
 		if (err) {
 			console.log("- ERROR ------");
