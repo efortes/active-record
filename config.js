@@ -1,3 +1,4 @@
 module.exports = {
-  logQuery: false
+  logQuery: false,
+  ldapIgnoreSelfSignedCertificates: true //
 }

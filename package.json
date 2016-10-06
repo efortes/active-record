@@ -25,6 +25,8 @@
   "dependencies": {
     "async": "^2.0.1",
     "extend": "^3.0.0",
+    "ldapjs": "^1.0.0",
+    "mysql": "^2.11.1",
     "quick-log": "0.0.2",
     "validator": "^6.0.0"
   }
