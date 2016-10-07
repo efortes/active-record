@@ -3,6 +3,7 @@
 const MasterModel = require('./lib/master-model');
 const SqlModel = require('./lib/sql-model');
 const LdapModel = require('./lib/ldap-model');
+const FieldModel = require('./lib/field-model');
 const LdapClient = require('./lib/client/ldap-client');
 const MysqlClient = require('./lib/client/mysql-client');
 const config = require('./config');
@@ -23,6 +24,11 @@ module.exports = {
    * Ldap model
    */
   LdapModel: LdapModel,
+
+  /**
+   * FieldModel (used in the SqlModel and LdapModel
+   */
+  FieldModel: FieldModel,
 
   /**
    * Override default module config

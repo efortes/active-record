@@ -1,7 +1,7 @@
 {
   "name": "active-record",
-  "version": "0.0.5",
-  "description": "The active record pattern is an approach to accessing data in a Mysql or LDAP database",
+  "version": "0.0.6",
+  "description": "The active record pattern is an approach to accessing data in a Mysql or LDAP database (Object relational mapping).",
   "main": "index.js",
   "scripts": {
     "test": "mocha ./test/unit.js"
@@ -14,7 +14,9 @@
     "Mysql",
     "LDAP",
     "Active",
-    "record"
+    "record",
+    "ORM",
+    "Object relational mapping"
   ],
   "author": "Elvin Fortes <info@fortesglobalweb.nl> (http://www.fortesglobalweb.nl)",
   "license": "ISC",
