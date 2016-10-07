@@ -2,11 +2,14 @@
 This module is not ready yet. Feel free to create pull requests at https://github.com/efortes/active-record .
 This module allows you to accessing and manipulating data in a Mysql or LDAP database withough writing queries.
 
+You can use it with promise or by callbacks.
+
 ### Set up
 ```
 const activeRecord = require('active-record');
 const SqlModel = activeRecord.SqlModel;
 const LdapModel = activeRecord.LdapModel;
+
 // Set config
 activeRecord.setConfig({
     logQuery: true
@@ -27,6 +30,40 @@ const ldapConn = activeRecord.createLdapConn({
 })
 
 ```
+
+### SQL methods
+```
+const ExampleModel = ExampleModel; // Extends SqlModel
+
+// Static methods
+ExampleModel.destroyById(id, options);
+ExampleModel.update(options);
+ExampleModel.destroy(options);
+ExampleModel.findById(id, options);
+ExampleModel.findAll(options); // Find one or more records
+ExampleModel.find(options); // Find single record
+ExampleModel.count(options);
+ExampleModel.query(options);
+
+// Instance methods
+const exampleModel = new ExampleModel({name: 'Nodejs', version: 'v0.9'});
+exampleModel.get('name'); // WIll ouput Nodejs
+exampleModel.set('version', 'v1.0'); // WIll ouput Nodejs
+exampleModel.isValid('version'); // bool
+exampleModel.getModified(); // modified fields
+exampleModel.setDirty(); // Set fields dirty
+exampleModel.isDirty('version'); // check if fields are dirty. If you pass the field it will check only the field
+exampleModel.removeDirty(); // Remove dirty
+exampleModel.getData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'}
+exampleModel.getRawData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'} but without converting etc.
+exampleModel.erase(options); // WIll delete the record
+exampleModel.getField(); // Instance of FieldModel
+
+```
+
+### LDAP methods
+TODO
+
 ### SQL model Example
 const activeRecord = require('active-record');
 const SqlModel = activeRecord.SqlModel;
@@ -38,23 +75,19 @@ class Service extends activeRecord.SqlModel {
   constructor(data) {
     super(data);
 
-    var fields = [SqlModel.createField({
-    	name: "id"
-    }), SqlModel.createField({
-    	name: "serviceCn"
-    })];
-
-     var associations = [
-       { type: 'hasOne',  Model:Background,      name: 'background' },
-       { type: 'hasOne',  Model:Language,        name: 'language' },
-       { type: 'hasMany', Model:ServiceComment,  name: 'serviceComments' },
-     ];
-
     this.init({
-    	fields: fields,
+    	fields: [SqlModel.createField({
+        	name: "id"
+        }), SqlModel.createField({
+        	name: "name"
+        })],
     	Model: Service,
     	data: data,
-			associations: associations
+		associations: [
+           { type: 'hasOne',  Model:Background,      name: 'background' },
+           { type: 'hasOne',  Model:Language,        name: 'language' },
+           { type: 'hasMany', Model:ServiceComment,  name: 'serviceComments' },
+        ]
     });
   }
 };
@@ -69,7 +102,28 @@ TODO
 
 ### SQL model save example
 ```
-TODO
+  const service = new Service{{name: 'Javascript'}};
+
+	service.set('name', 'NodeJS')
+
+	if (service.isDirty()) {
+		 // Save service cb
+		service.save({
+		  callback: (err, result) => {
+			if (err) return callback(err);
+
+			callback();
+		  }
+		});
+
+		 // Save service promise
+		service.save().then(service => {
+
+		}).catch(err => {
+
+		});
+	}
+
 ```
 ### SQL count
 ```
@@ -138,6 +192,3 @@ ldapUser.save({
 	}
 });
 ```
-
-
-This implementation is NOT final and subject to change.

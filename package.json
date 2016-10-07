@@ -1,6 +1,6 @@
 {
   "name": "active-record",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "The active record pattern is an approach to accessing data in a Mysql or LDAP database",
   "main": "index.js",
   "scripts": {
