@@ -1,6 +1,6 @@
 ## Intro
-This module is not ready yet. Feel free to create pull requests at https://github.com/efortes/active-record .
-This module allows you to accessing and manipulating data in a Mysql or LDAP database withough writing queries.
+This module allows you to access and manipulate data in a Mysql or LDAP database without writing queries.
+Feel free to create pull requests at https://github.com/efortes/active-record .
 
 You can use it with promise or by callbacks.
 
