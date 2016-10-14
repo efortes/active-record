@@ -69,6 +69,7 @@ ExampleModel.save(options); // Save instance to DB
 
 ```
 ### LDAP methods
+```
 // Static methods
 ExampleModel.generateUniqueAttribute(options);  // Generate an unique key for a new record. override this method to gerenate your own unique keys
 ExampleModel.destroy(options);
@@ -95,6 +96,7 @@ exampleModel.getRawData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'} but w
 exampleModel.erase(options); // WIll delete the record
 exampleModel.getField(fieldName); // Instance of FieldModel
 ExampleModel.save(options); // options should always specify a parentDn attr (root lvl to search)
+```
 
 ### SQL model Example
 const activeRecord = require('active-record');
