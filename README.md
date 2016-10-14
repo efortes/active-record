@@ -12,8 +12,15 @@ const LdapModel = activeRecord.LdapModel;
 
 // Set config
 activeRecord.setConfig({
-    logQuery: true
-})
+  mysql: {
+    logQuery: false
+  },
+  ldap: {
+    ldapIgnoreSelfSignedCertificates: true,
+    logQuery: false,
+    manualLdapQueryTimeOut: 0 // 0 = No manual query timeout || milisec for the manual query timeoiut
+  }
+});
 
 // Mysql connection See https://www.npmjs.com/package/mysql#pool-options for the mysql pool options
 const mysqlConn = activeRecord.createMysqlConn({
@@ -57,12 +64,37 @@ exampleModel.removeDirty(); // Remove dirty
 exampleModel.getData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'}
 exampleModel.getRawData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'} but without converting etc.
 exampleModel.erase(options); // WIll delete the record
-exampleModel.getField(); // Instance of FieldModel
+exampleModel.getField(fieldName); // Instance of FieldModel
+ExampleModel.save(options); // Save instance to DB
 
 ```
-
 ### LDAP methods
-TODO
+// Static methods
+ExampleModel.generateUniqueAttribute(options);  // Generate an unique key for a new record. override this method to gerenate your own unique keys
+ExampleModel.destroy(options);
+ExampleModel.findById(id, options);
+ExampleModel.findByDn(dn, options);
+ExampleModel.findAll(options); // Find one or more records
+ExampleModel.find(options); // Find single record
+ExampleModel.count(options);
+ExampleModel.query(options);
+ExampleModel.getBaseDn(options);
+ExampleModel.getParentDn(options);
+
+// Instance methods
+const exampleModel = new ExampleModel({name: 'Nodejs', version: 'v0.9'});
+exampleModel.get('name'); // WIll ouput Nodejs
+exampleModel.set('version', 'v1.0'); // WIll ouput Nodejs
+exampleModel.isValid('version'); // bool
+exampleModel.getModified(); // modified fields
+exampleModel.setDirty(); // Set fields dirty
+exampleModel.isDirty('version'); // check if fields are dirty. If you pass the field it will check only the field
+exampleModel.removeDirty(); // Remove dirty
+exampleModel.getData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'}
+exampleModel.getRawData(); // WIll ouput {name: 'Nodejs', version: 'v1.0'} but without converting etc.
+exampleModel.erase(options); // WIll delete the record
+exampleModel.getField(fieldName); // Instance of FieldModel
+ExampleModel.save(options); // options should always specify a parentDn attr (root lvl to search)
 
 ### SQL model Example
 const activeRecord = require('active-record');
@@ -155,15 +187,21 @@ class LdapUser extends LdapModel {
 	  })];
 
 	  this.init({
-	  	fields: fields,
+	  	fields: [LdapModel.createField({
+			name: "dn",
+		}),LdapModel.createField({
+			name: "cn",
+		}),LdapModel.createField({
+			name: "name",
+		})],
 	  	Model: LdapUser,
 	  	data: data
 	  });
 	}
 
-  generateUniqueAttribute(options) {
-  	return options.callback(null, "1000000");
-  }
+	generateUniqueAttribute(options) {
+		return options.callback(null, "1000000");
+	}
 };
 
 LdapUser.objectClasses = ["user"];
