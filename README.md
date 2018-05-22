@@ -110,18 +110,21 @@ class Service extends activeRecord.SqlModel {
     super(data);
 
     this.init({
-    	fields: [SqlModel.createField({
-        	name: "id"
-        }), SqlModel.createField({
-        	name: "name"
-        })],
-    	Model: Service,
-    	data: data,
-		associations: [
-           { type: 'hasOne',  Model:Background,      name: 'background' },
-           { type: 'hasOne',  Model:Language,        name: 'language' },
-           { type: 'hasMany', Model:ServiceComment,  name: 'serviceComments' },
-        ]
+      fields: [
+        SqlModel.createField({
+          name: "id"
+        }),
+        SqlModel.createField({
+          name: "name"
+        })
+      ],
+      Model: Service,
+      data: data,
+      associations: [
+        { type: 'hasOne',  Model: Background,      name: 'background' },
+        { type: 'hasOne',  Model: Language,        name: 'language' },
+        { type: 'hasMany', Model: ServiceComment,  name: 'serviceComments' },
+      ]
     });
   }
 };
@@ -138,37 +141,37 @@ TODO
 ```
   const service = new Service{{name: 'Javascript'}};
 
-	service.set('name', 'NodeJS')
+  service.set('name', 'NodeJS')
 
-	if (service.isDirty()) {
-		 // Save service cb
-		service.save({
-		  callback: (err, result) => {
-			if (err) return callback(err);
+  if (service.isDirty()) {
+    // Save service cb
+    service.save({
+      callback: (err, result) => {
+        if (err) return callback(err);
 
-			callback();
-		  }
-		});
+        callback();
+      }
+    });
 
-		 // Save service promise
-		service.save().then(service => {
+    // Save service promise
+    service.save().then(service => {
 
-		}).catch(err => {
+    }).catch(err => {
 
-		});
-	}
+  });
+}
 
 ```
 ### SQL count
 ```
 ServiceModel.count({
-	include: ['language'],
-	callback: function(err, total) {
-		if (err) {
-			return console.log(err);
-		}
-		console.log("Total count: " + total);
-	}
+  include: ['language'],
+  callback: function(err, total) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log("Total count: " + total);
+  }
 });
 ```
 
@@ -177,33 +180,33 @@ ServiceModel.count({
 ```
 class LdapUser extends LdapModel {
 
-	constructor(data) {
-	  super(data);
+  constructor(data) {
+    super(data);
 
-	  var fields = [LdapModel.createField({
-	  	name: "dn",
-	  }),LdapModel.createField({
-	  	name: "cn",
-	  }),LdapModel.createField({
-	  	name: "name",
-	  })];
+    var fields = [LdapModel.createField({
+      name: "dn",
+    }),LdapModel.createField({
+      name: "cn",
+    }),LdapModel.createField({
+      name: "name",
+    })];
 
-	  this.init({
-	  	fields: [LdapModel.createField({
-			name: "dn",
-		}),LdapModel.createField({
-			name: "cn",
-		}),LdapModel.createField({
-			name: "name",
-		})],
-	  	Model: LdapUser,
-	  	data: data
-	  });
-	}
+    this.init({
+      fields: [LdapModel.createField({
+      name: "dn",
+    }),LdapModel.createField({
+      name: "cn",
+    }),LdapModel.createField({
+      name: "name",
+    })],
+      Model: LdapUser,
+      data: data
+    });
+  }
 
-	generateUniqueAttribute(options) {
-		return options.callback(null, "1000000");
-	}
+  generateUniqueAttribute(options) {
+    return options.callback(null, "1000000");
+  }
 };
 
 LdapUser.objectClasses = ["user"];
@@ -215,20 +218,20 @@ LdapUser.baseDn = "ou=User,dc=CIDS";
 ### LDAP model save example
 ```
 var ldapUser = new LdapUser({
-	cn: "test" + Math.random(),
-	name: "test" + Math.random(),
+  cn: "test" + Math.random(),
+  name: "test" + Math.random(),
 });
 
 ldapUser.set("name", "test2" + Math.random());
 
 ldapUser.save({
-	parentDn: LdapUser.getBaseDn(),
-	callback: function(err, newModel) {
-		if (err) {
-			console.log("- ERROR ------");
-			return console.log(err.toString());
-		}
-		console.log(newModel);
-	}
+  parentDn: LdapUser.getBaseDn(),
+  callback: function(err, newModel) {
+    if (err) {
+      console.log("- ERROR ------");
+      return console.log(err.toString());
+    }
+    console.log(newModel);
+  }
 });
 ```
